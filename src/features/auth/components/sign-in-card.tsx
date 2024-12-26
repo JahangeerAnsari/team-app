@@ -20,9 +20,14 @@ interface SignInCardProps {
 const SignInCard = ({ setState }: SignInCardProps) => {
   const { signIn } = useAuthActions();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("")
+  const [password, setPassword] = useState("");
+  const[pending,setPending] = useState(false)
   const handlerSigninProvider = (value: "github" | "google") => {
+    setPending(true)
     signIn(value)
+      .finally(() => {
+      setPending(false)
+    })
   }
   return (
     <Card className="h-full w-full p-8">
@@ -36,7 +41,7 @@ const SignInCard = ({ setState }: SignInCardProps) => {
       <CardContent className="space-y-5 px-0 pb-0">
         <form className="space-y-2.5">
           <Input
-            disabled={false}
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -44,7 +49,7 @@ const SignInCard = ({ setState }: SignInCardProps) => {
             required
           />
           <Input
-            disabled={false}
+            disabled={pending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter Password"
@@ -56,7 +61,7 @@ const SignInCard = ({ setState }: SignInCardProps) => {
             className="w-full"
             variant="default"
             size="lg"
-            disabled={false}
+            disabled={pending}
             type="submit"
           >
             Continue
@@ -67,8 +72,8 @@ const SignInCard = ({ setState }: SignInCardProps) => {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => {}}
-            disabled={false}
+            onClick={() => handlerSigninProvider("google")}
+            disabled={pending}
             className="w-full relative"
           >
             <FcGoogle className="size-5 absolute top-2.5 left-2.5" />
@@ -78,7 +83,7 @@ const SignInCard = ({ setState }: SignInCardProps) => {
             variant="outline"
             size="lg"
             onClick={() => handlerSigninProvider("github")}
-            disabled={false}
+            disabled={pending}
             className="w-full relative"
           >
             <FaGithub className="size-5 absolute top-2.5 left-2.5" />
