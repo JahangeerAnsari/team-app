@@ -1,6 +1,8 @@
+
+"use client";
 import { CreateWorkspaceModal } from "@/features/workspaces/components/create-workspace-modal";
 import { useEffect, useState } from "react";
-import { mutation } from "../../convex/_generated/server";
+
 
 const Modals = () => {
     // to prevent hyderation error 
