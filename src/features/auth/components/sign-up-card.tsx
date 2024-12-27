@@ -12,14 +12,43 @@ import React, { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { SignInFlow } from "../types";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { TriangleAlert } from "lucide-react";
 interface SignUpCardProps {
   setState: (state: SignInFlow) => void;
 }
 
 const SignUpCard = ({ setState }: SignUpCardProps) => {
+  const { signIn } = useAuthActions();
+   const [name, setName] = useState("");
    const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword,setConfirmPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error ,setError] = useState("")
+  const [pending, setPending] = useState(false);
+  
+  const onPasswordSingUp = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Password do not match");
+      return;
+      }
+    setPending(true);
+    signIn("password", {name, email, password, flow: "signUp" })
+      .catch(() => {
+      setError("Someting went wrong")
+    })
+      .finally(() => {
+        setPending(false)
+    })
+  }
+  // LOGIN WITH GOOGLE AND GITHUB
+  const handlerSigninProvider = (value: "github" | "google") => {
+    setPending(true);
+    signIn(value).finally(() => {
+      setPending(false);
+    });
+  };
   return (
     <Card className="h-full w-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -28,11 +57,24 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
           Use Your email or another service to continue
         </CardDescription>
       </CardHeader>
-
+      {!!error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <TriangleAlert className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
-        <form className="space-y-2.5">
+        <form onSubmit={onPasswordSingUp} className="space-y-2.5">
           <Input
-            disabled={false}
+            disabled={pending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name"
+            type="text"
+            required
+          />
+          <Input
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -40,19 +82,19 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
             required
           />
           <Input
-            disabled={false}
+            disabled={pending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            type="password"
+            // type="password"
             required
           />
           <Input
-            disabled={false}
-            value=""
+            disabled={pending}
+            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm Password"
-            type="password"
+            // type="password"
             required
           />
 
@@ -60,7 +102,7 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
             className="w-full"
             variant="default"
             size="lg"
-            disabled={false}
+            disabled={pending}
             type="submit"
           >
             Continue
@@ -71,8 +113,8 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => {}}
-            disabled={false}
+            onClick={() => handlerSigninProvider("google")}
+            disabled={pending}
             className="w-full relative"
           >
             <FcGoogle className="size-5 absolute top-2.5 left-2.5" />
@@ -81,8 +123,8 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => {}}
-            disabled={false}
+            onClick={() => handlerSigninProvider("github")}
+            disabled={pending}
             className="w-full relative"
           >
             <FaGithub className="size-5 absolute top-2.5 left-2.5" />
