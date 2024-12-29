@@ -52,15 +52,15 @@ const WorkspaceSwitcher = () => {
         {filteredWorkspaces?.map((workspace) => (
           <DropdownMenuItem
             key={workspace._id}
-            className="cursor-pointer capitalize"
+            className="cursor-pointer capitalize overflow-hidden"
             onClick={() => router.push(`/workspace/${workspace._id}`)}
           >
-            <div className="size-9 relative overflow-hidden bg-[#616061]  text-white font-semibold text-lg rounded-md items-center">
+            <div className="shrink-0  size-9 relative overflow-hidden bg-[#616061]  text-white font-semibold text-lg rounded-md items-center">
               <span className="ml-2.5">
                 {workspace.name.charAt(0).toUpperCase()}
               </span>
             </div>
-            {workspace.name}
+            <p className="trunacte">{workspace.name}</p>
           </DropdownMenuItem>
         ))}
 
@@ -69,7 +69,7 @@ const WorkspaceSwitcher = () => {
           onClick={() => setOpen(true)}
         >
           <div className="size-9 relative overflow-hidden bg-[#F2F2F2] text-slate-800 font-semibold text-lg rounded-md items-center justify-center">
-            <Plus className="ml-2 mt-3"/>
+            <Plus className="ml-2 mt-3" />
           </div>
           Create a new workspace
         </DropdownMenuItem>
