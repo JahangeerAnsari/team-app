@@ -16,18 +16,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 export const CreateWorkspaceModal = () => {
   const router = useRouter();
-  const { mutate, data, isPending } = useCreateWorkspace();
+  const { mutate,  isPending } = useCreateWorkspace();
   const [open, setOpen] = useCreateWorkSpaceModal();
   const [name, setName] = useState("");
   const handleClose = () => {
     // TODO: to clear formdata
     setOpen(false);
+    setName("")
   };
   const handleSubmitWorkSpace = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate({ name }, {
       onSuccess(data) {
-        console.log("data",data);
+        // as we know our data is an id
+        router.push(`/workspace/${data}`)
+        handleClose()
         
       },
     })
