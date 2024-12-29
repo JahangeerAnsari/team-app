@@ -5,7 +5,7 @@ interface WorkSpaceIdProps{
 }
 const WorkSpaceIdPage = ({params}: WorkSpaceIdProps) => {
     return <div>
-      ID: {params.workspaceId}
+      ID: {params?.workspaceId}
   </div>;
 };
  

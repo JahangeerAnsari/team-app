@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { useCreateWorkspace } from "../api/use-create-workspace";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+
 export const CreateWorkspaceModal = () => {
   const router = useRouter();
   const { mutate,  isPending } = useCreateWorkspace();
@@ -28,6 +30,7 @@ export const CreateWorkspaceModal = () => {
     e.preventDefault();
     mutate({ name }, {
       onSuccess(data) {
+        toast.success("Workspace created!");
         // as we know our data is an id
         router.push(`/workspace/${data}`)
         handleClose()
