@@ -17,7 +17,7 @@ export default function Home() {
 
   useEffect(() => {
     if (isLoading) {
-      return;
+      return ;
     }
     if (workspaceId) {
       console.log("Redirect to workspace");
