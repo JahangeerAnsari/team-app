@@ -7,7 +7,17 @@ const schema = defineSchema({
     name: v.string(),
     userId: v.id("users"),
     joinCode:v.string()
+  }),
+  //we can start for members
+  members: defineTable({
+    userId: v.id("users"),
+    workspaceId: v.id("workspaces"),
+    role: v.union(v.literal("admin"), v.literal("member"))
   })
+    // we can fetched user and workspace very fast
+  .index("by_user_id",["userId"])
+  .index("by_workspace_id",["workspaceId"])
+  .index("by_workspace_id_user_id",["workspaceId","userId"])
   });
 
 export default schema;

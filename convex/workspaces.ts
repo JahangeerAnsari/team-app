@@ -21,6 +21,12 @@ export const create = mutation({
             userId,
             joinCode
         });
+        // we can create member also while creating the ws
+        await ctx.db.insert("members", {
+            userId,
+            workspaceId,
+            role:"admin"
+         })
         // we can check 
         // const workspace = await ctx.db.get(workspaceId)
         return workspaceId;
@@ -31,7 +37,24 @@ export const create = mutation({
 export const get = query({
     args: {},
     handler: async (ctx) => {
-     return  await ctx.db.query('workspaces').collect()
+      const userId = await auth.getUserId(ctx);
+      if (!userId) {
+        return [];
+      }
+      // i will get all the member with the login user part of
+      const members = await ctx.db
+        .query("members")
+        .withIndex("by_user_id", (q) => q.eq("userId", userId))
+            .collect();
+        const workspaceIds = members.map((member) => member.workspaceId);
+        const workspaces = [];
+        for (const workspaceId of workspaceIds) {
+            const workspace = await ctx.db.get(workspaceId);
+            if (workspace) {
+                workspaces.push(workspace)
+            }
+        }
+        return workspaces;
     }
 })
 export const getById = query({
@@ -41,6 +64,13 @@ export const getById = query({
         if (!userId) {
             throw new Error("Unauthorized")
         }
+        const member = await ctx.db.query("members")
+            .withIndex("by_workspace_id_user_id", (q) =>
+                q.eq("workspaceId", args.id).eq("userId", userId)
+        ).unique();
+        if (!member) {
+            return null;
+         }
         return await ctx.db.get(args.id)
     }
 })
