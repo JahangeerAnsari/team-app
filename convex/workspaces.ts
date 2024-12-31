@@ -2,6 +2,14 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { auth } from "./auth";
 
+// lets generate unique code
+export const generateCode = () => {
+    const code = Array.from({ length: 6 }, () => 
+        "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]
+    ).join("");
+    return code;
+}
+
 
 export const create = mutation({
     args: {
@@ -14,7 +22,7 @@ export const create = mutation({
             throw new Error("Unauthorized")
         }
         // TODO :JOIN CODE FUNCTIONALITY
-        const joinCode = "123456";
+        const joinCode = generateCode();
         // every time we create data in convex it return id not data
         const workspaceId = await ctx.db.insert("workspaces", {
             name: args.name,
