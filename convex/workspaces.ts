@@ -10,7 +10,7 @@ export const generateCode = () => {
     return code;
 }
 
-
+// create workspaces
 export const create = mutation({
     args: {
        name:v.string() 
@@ -34,7 +34,12 @@ export const create = mutation({
             userId,
             workspaceId,
             role:"admin"
-         })
+        })
+      // Everytime when we create workspace a default channel will created
+      await ctx.db.insert("channels", {
+        name: "general",
+        workspaceId: workspaceId,
+      });
         // we can check 
         // const workspace = await ctx.db.get(workspaceId)
         return workspaceId;
