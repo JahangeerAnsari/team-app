@@ -21,7 +21,12 @@ const WorkspaceHeader = ({ workspace, isAdmin }: WorkspaceHeaderProps) => {
   const [inviteOpen, setInviteOpen] = useState(false);
   return (
     <>
-      <InviteModal open={inviteOpen} setOpen={setInviteOpen} />
+      {/* Here we have abl data of workspace we can pass to it invite modal */}
+      <InviteModal open={inviteOpen}
+        setOpen={setInviteOpen}
+        name={workspace.name}
+        joinCode={workspace.joinCode}
+      />
       <PreferenceModal
         open={preferenceOpen}
         setOpen={setPreferenceOpen}
