@@ -50,7 +50,9 @@ const WorkspaceSidebar = () => {
             id="drafts"
           />
         </div>
-        <WorkspaceSection label="Channels" hint="New Channel" onNew={() => setOpen(true)}>
+        <WorkspaceSection label="Channels"
+          hint="New Channel"
+          onNew={member.role ==="admin"? () => setOpen(true) : undefined}>
           {channels?.map((item) => (
             <SidebarItem
               key={item._id}
