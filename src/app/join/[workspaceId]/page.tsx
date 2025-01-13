@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
 
 import VerificationInput from "react-verification-input";
 import { toast } from "sonner";
@@ -16,6 +17,16 @@ const JoinPage = () => {
   const router = useRouter();
   const { data, isLoading } = useGetWorkspaceInfo({ id: workspaceId });
   const { mutate, isPending } = useJoinWorkspace();
+  
+  // if the user is also the member of the workspace then
+  // no need to show join page
+  const isMember = useMemo(() => data?.isMember, [data?.isMember]);
+  useEffect(() => {
+    if (isMember) {
+        router.push(`/workspace/${workspaceId}`)
+      }
+    },[isMember, router,workspaceId])
+
   const handleComplete = (value: string) => {
     mutate(
       { workspaceId, joinCode: value },
