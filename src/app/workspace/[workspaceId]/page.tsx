@@ -18,25 +18,23 @@ const WorkSpaceIdPage = () => {
      const {data:channels, isLoading:channelsLoading} = useGetchannels({workspaceId})
      //   find the first channel
      const channelId = useMemo(() => channels?.[0]?._id, [channels]);
-     const isAdmin = useMemo(() => member?.role ==="admin" ,[member?.role]);
-     
-     useEffect(() => {
-       if (workspaceLoading || channelsLoading || !workspace || !memberLoading || !member) return;
-       if (channelId) {
+  const isAdmin = useMemo(() => member?.role === "admin", [member?.role]);
+      useEffect(() => {
+      //  if (workspaceLoading || channelsLoading || !workspace || !memberLoading || !member) return;
+       if (channelId) {  
          router.push(`/workspace/${workspaceId}/channel/${channelId}`);
        } else if (!open && isAdmin) {
          setOpen(true);
        }
-     }, [workspaceLoading, channelsLoading, workspace, channelId, open, setOpen, member,
-          memberLoading,isAdmin]);
-     if (workspaceLoading || channelsLoading) {
-          return (
+     }, [channelId, open, setOpen,isAdmin]);
+     if (workspaceLoading || channelsLoading || !memberLoading) {
+          return ( 
                <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
                    <Loader className="size-6 animate-spin text-muted-foreground"/> 
                  </div>
             )
      }
-      if (!workspace) {
+      if (!workspace  || !member) {
         return (
           <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
                   <TriangleAlert className="size-6  text-muted-foreground" />
