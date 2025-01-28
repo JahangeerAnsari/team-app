@@ -4,7 +4,7 @@ import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from "
 import { PiTextAa } from "react-icons/pi";
 import { MdSend } from "react-icons/md";
 import { Button } from "./ui/button";
-import { ImageIcon, Smile } from "lucide-react";
+import { ImageIcon, Key, Keyboard, Smile } from "lucide-react";
 import Hint from "./hint";
 import { cn } from "@/lib/utils";
 type EditorValue = {
@@ -48,9 +48,35 @@ const Editor = ({
     const editorContainer = container.appendChild(
       container.ownerDocument.createElement("div")
     );
+    
     const options: QuillOptions = {
-        theme: "snow",
-        placeholder:placeholderRef.current
+      theme: "snow",
+      placeholder: placeholderRef.current,
+      modules: {
+        toolbar: [
+          ["bold", "italic", "strike"],
+          ["link", "image"],
+          [{list:"orders"}, {list:"bullet"}]
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: "Enter",
+              handler: () => {
+                console.log("enter calling");
+                return;
+              },
+            },
+            shift_enter: {
+              key: "Enter",
+              shiftKey: true,
+              handler: () => {
+                quill.insertText(quill.getSelection()?.index || 0, "\n");
+              },
+            },
+          },
+        },
+      },
     };
     // lets focus to the text editor
     const quill = new Quill(editorContainer, options);
@@ -81,12 +107,12 @@ const Editor = ({
         innerRef.current = null
       }
     };
-  }, [innerRef]);
+  }, [innerRef, containerRef]);
   // the default value of quill is "<br/> <p></p>"
   // lets remove the quill and set only the ""
   const isEmpty = text.replace(/<(.\|n)*?>/g, "").trim().length === 0;
 
-    console.log("isEmpty", { isEmpty , text});
+
     
   return (
     <div className="flex flex-col">
