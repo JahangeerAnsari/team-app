@@ -1,6 +1,12 @@
 import Quill, { Delta, Op, type QuillOptions } from "quill";
 import "quill/dist/quill.snow.css";
-import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { PiTextAa } from "react-icons/pi";
 import { MdSend } from "react-icons/md";
 import { Button } from "./ui/button";
@@ -24,13 +30,14 @@ interface EditorProps {
 const Editor = ({
   variant = "create",
   onSubmit,
-  defaultValue=[],
-  disabled=false,
+  defaultValue = [],
+  disabled = false,
   innerRef,
   onCancel,
-  placeholder="Write Something....",
+  placeholder = "Write Something....",
 }: EditorProps) => {
   const [text, setText] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isToolbarVisible, isSetToolbarVisible] = useState(true);
   const submitRef = useRef(onSubmit);
@@ -38,6 +45,8 @@ const Editor = ({
   const quillRef = useRef<Quill | null>(null);
   const disabledRef = useRef(disabled);
   const defaultValueRef = useRef(defaultValue);
+  // need imageRef for image
+  const imageElementRef = useRef<HTMLInputElement>(null);
   useLayoutEffect(() => {
     submitRef.current = onSubmit;
     placeholderRef.current = placeholder;
@@ -108,7 +117,7 @@ const Editor = ({
         innerRef.current = null;
       }
     };
-  }, [innerRef, containerRef]);
+  }, [innerRef]);
   // the default value of quill is "<br/> <p></p>"
   // lets remove the quill and set only the ""
   const isEmpty = text.replace(/<(.\|n)*?>/g, "").trim().length === 0;
@@ -127,6 +136,7 @@ const Editor = ({
   };
   return (
     <div className="flex flex-col">
+      <input type="file" className="hidden" accept="image/*" ref={imageElementRef} onChange={(e) =>setImage(e.target.files![0])}/>
       <div
         className="flex flex-col border border-slate-200 rounded-md
             overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white
@@ -158,7 +168,7 @@ const Editor = ({
                 disabled={disabled}
                 size="iconSm"
                 variant="ghost"
-                onClick={() => {}}
+                onClick={() => imageElementRef.current?.click()}
               >
                 <ImageIcon className="size-4" />
               </Button>
