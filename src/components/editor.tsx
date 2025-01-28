@@ -6,6 +6,7 @@ import { MdSend } from "react-icons/md";
 import { Button } from "./ui/button";
 import { ImageIcon, Smile } from "lucide-react";
 import Hint from "./hint";
+import { cn } from "@/lib/utils";
 type EditorValue = {
   image: File | null;
   body: string;
@@ -85,7 +86,8 @@ const Editor = ({
   // lets remove the quill and set only the ""
   const isEmpty = text.replace(/<(.\|n)*?>/g, "").trim().length === 0;
 
-  
+    console.log("isEmpty", { isEmpty , text});
+    
   return (
     <div className="flex flex-col">
       <div
@@ -150,10 +152,11 @@ const Editor = ({
 
           {variant === "create" && (
             <Button
-              disabled={false}
+              disabled={disabled || isEmpty}
               onClick={() => {}}
               size="iconSm"
-              className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+              className={cn("ml-auto" , isEmpty ? "bg-white hover:bg-white text-muted-foreground": "bg-[#007a5a] hover:bg-[#007a5a]/80 text-white")}
+             
             >
               <MdSend />
             </Button>
