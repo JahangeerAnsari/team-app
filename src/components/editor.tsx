@@ -1,6 +1,6 @@
 import Quill, { Delta, Op, type QuillOptions } from "quill";
 import "quill/dist/quill.snow.css";
-import { MutableRefObject, useEffect, useLayoutEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PiTextAa } from "react-icons/pi";
 import { MdSend } from "react-icons/md";
 import { Button } from "./ui/button";
@@ -28,6 +28,7 @@ const Editor = ({
   onCancel,
   placeholder="Write Something....",
 }: EditorProps) => {
+  const[text, setText]= useState('')
   const containerRef = useRef<HTMLDivElement>(null);
     const submitRef = useRef(onSubmit);
     const placeholderRef = useRef(placeholder);
@@ -53,13 +54,33 @@ const Editor = ({
     // lets focus to the text editor
     const quill = new Quill(editorContainer, options);
     quillRef.current = quill;
-    quillRef.current.focus()
+    quillRef.current.focus();
+    // after send msg i wannt to focus to text input
+    if (innerRef) {
+      innerRef.current = quill;
+    }
+    // set text to the quill
+    quill.setContents(defaultValueRef.current);
+    setText(quill.getText())
+    // added event to change every text change(every strock)
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      setText(quill.getText())
+    })
     return () => {
+      // when event(update mean clear the events)
+      quill.off(Quill.events.TEXT_CHANGE)
       if (container) {
         container.innerHTML = "";
       }
+      // if there is current 
+      if (quillRef.current) {
+        quillRef.current = null
+      }
+      if (innerRef) {
+        innerRef.current = null
+      }
     };
-  }, []);
+  }, [innerRef]);
   return (
     <div className="flex flex-col">
       <div
