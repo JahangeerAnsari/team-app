@@ -81,6 +81,11 @@ const Editor = ({
       }
     };
   }, [innerRef]);
+  // the default value of quill is "<br/> <p></p>"
+  // lets remove the quill and set only the ""
+  const isEmpty = text.replace(/<(.\|n)*?>/g, "").trim().length === 0;
+
+  
   return (
     <div className="flex flex-col">
       <div
