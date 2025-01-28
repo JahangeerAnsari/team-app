@@ -31,7 +31,7 @@ const Editor = ({
 }: EditorProps) => {
   const[text, setText]= useState('')
   const containerRef = useRef<HTMLDivElement>(null);
-  const[isToolbarVisible, isSetToolbarVisible] = useState(false)
+  const[isToolbarVisible, isSetToolbarVisible] = useState(true)
     const submitRef = useRef(onSubmit);
     const placeholderRef = useRef(placeholder);
     const quillRef = useRef<Quill | null>(null);
@@ -201,11 +201,13 @@ const Editor = ({
           )}
         </div>
       </div>
-      <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
-        <p>
-          <strong>Shift + Return</strong> to add a new line
-        </p>
-      </div>
+      {variant === "create" && (
+        <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
+          <p>
+            <strong>Shift + Return</strong> to add a new line
+          </p>
+        </div>
+      )}
     </div>
   );
 };
