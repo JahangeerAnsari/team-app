@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { ImageIcon, Key, Keyboard, Smile } from "lucide-react";
 import Hint from "./hint";
 import { cn } from "@/lib/utils";
+import { EmojiPopover } from "./emoji-popover";
 type EditorValue = {
   image: File | null;
   body: string;
@@ -29,27 +30,27 @@ const Editor = ({
   onCancel,
   placeholder="Write Something....",
 }: EditorProps) => {
-  const[text, setText]= useState('')
+  const [text, setText] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
-  const[isToolbarVisible, isSetToolbarVisible] = useState(true)
-    const submitRef = useRef(onSubmit);
-    const placeholderRef = useRef(placeholder);
-    const quillRef = useRef<Quill | null>(null);
-    const disabledRef = useRef(disabled);
-    const defaultValueRef = useRef(defaultValue);
-    useLayoutEffect(() => {
-        submitRef.current = onSubmit;
-        placeholderRef.current = placeholder;
-        disabledRef.current = disabled;
-        defaultValueRef.current = defaultValue;
-    })
+  const [isToolbarVisible, isSetToolbarVisible] = useState(true);
+  const submitRef = useRef(onSubmit);
+  const placeholderRef = useRef(placeholder);
+  const quillRef = useRef<Quill | null>(null);
+  const disabledRef = useRef(disabled);
+  const defaultValueRef = useRef(defaultValue);
+  useLayoutEffect(() => {
+    submitRef.current = onSubmit;
+    placeholderRef.current = placeholder;
+    disabledRef.current = disabled;
+    defaultValueRef.current = defaultValue;
+  });
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
     const editorContainer = container.appendChild(
       container.ownerDocument.createElement("div")
     );
-    
+
     const options: QuillOptions = {
       theme: "snow",
       placeholder: placeholderRef.current,
@@ -57,7 +58,7 @@ const Editor = ({
         toolbar: [
           ["bold", "italic", "strike"],
           ["link", "image"],
-          [{list:"orders"}, {list:"bullet"}]
+          [{ list: "orders" }, { list: "bullet" }],
         ],
         keyboard: {
           bindings: {
@@ -88,23 +89,23 @@ const Editor = ({
     }
     // set text to the quill
     quill.setContents(defaultValueRef.current);
-    setText(quill.getText())
+    setText(quill.getText());
     // added event to change every text change(every strock)
     quill.on(Quill.events.TEXT_CHANGE, () => {
-      setText(quill.getText())
-    })
+      setText(quill.getText());
+    });
     return () => {
       // when event(update mean clear the events)
-      quill.off(Quill.events.TEXT_CHANGE)
+      quill.off(Quill.events.TEXT_CHANGE);
       if (container) {
         container.innerHTML = "";
       }
-      // if there is current 
+      // if there is current
       if (quillRef.current) {
-        quillRef.current = null
+        quillRef.current = null;
       }
       if (innerRef) {
-        innerRef.current = null
+        innerRef.current = null;
       }
     };
   }, [innerRef, containerRef]);
@@ -114,12 +115,16 @@ const Editor = ({
 
   const toggleToolbar = () => {
     isSetToolbarVisible((current) => !current);
-    const toolbarElement = containerRef.current?.querySelector('.ql-toolbar');
+    const toolbarElement = containerRef.current?.querySelector(".ql-toolbar");
     if (toolbarElement) {
-      toolbarElement.classList.toggle("hidden")
+      toolbarElement.classList.toggle("hidden");
     }
-}
-    
+  };
+  // passing the emoji at text emoji.native
+  const selectEmoji = (emoji: any) => {
+    const quill = quillRef.current;
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+  };
   return (
     <div className="flex flex-col">
       <div
@@ -141,16 +146,12 @@ const Editor = ({
               <PiTextAa className="size-4" />
             </Button>
           </Hint>
-          <Hint label="Emoji">
-            <Button
-              disabled={disabled}
-              size="iconSm"
-              variant="ghost"
-              onClick={() => {}}
-            >
+          {/* replacing Hint to EmojiPopover */}
+          <EmojiPopover onEmojiSelect={selectEmoji}>
+            <Button disabled={disabled} size="iconSm" variant="ghost">
               <Smile className="size-4" />
             </Button>
-          </Hint>
+          </EmojiPopover>
           {variant === "create" && (
             <Hint label="Image">
               <Button
