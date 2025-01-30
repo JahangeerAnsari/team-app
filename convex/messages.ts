@@ -15,32 +15,44 @@ const getMembers = async (
     ).unique()
 }
 export const create = mutation({
-    args: {
-        body: v.string(),
-        image: v.optional(v.id("_storage")),
-        workspaceId: v.id("workspaces"),
-        channelId: v.optional(v.id("channels")),
-        parentMessageId:v.optional(v.id("messages"))
-    },
-    handler:async (ctx,args) => {
-        const userId = await auth.getUserId(ctx);
-        if (!userId) {
-            throw new Error("Unauthorized")
-        }
-        // get the member
-        const member = await getMembers(ctx, args.workspaceId, userId);
-        if (!member) {
-             throw new Error("Unauthorized");
-         }
-        const messageId = await ctx.db.insert("messages", {
-            memberId: member._id,
-            body: args.body,
-            image: args.image,
-            channelId: args.channelId,
-            workspaceId: args.workspaceId,
-            parentMessageId: args.parentMessageId,
-            updatedAt:Date.now()
-        })
-        return messageId;
+  args: {
+    body: v.string(),
+    image: v.optional(v.id("_storage")),
+    workspaceId: v.id("workspaces"),
+    channelId: v.optional(v.id("channels")),
+    conversationId: v.optional(v.id("conversations")),
+    parentMessageId: v.optional(v.id("messages")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) {
+      throw new Error("Unauthorized");
     }
-})
+    // get the member
+    const member = await getMembers(ctx, args.workspaceId, userId);
+    if (!member) {
+      throw new Error("Unauthorized");
+      }
+    
+      let _conversationId = args.conversationId
+      //   if possible if we are replying 1:1 conversation
+      if (!args.conversationId && !args.channelId && args.parentMessageId) {
+          const parentMessage = await ctx.db.get(args.parentMessageId);
+          if (!parentMessage) {
+               throw new Error("Parent message not ")
+          }
+          _conversationId = parentMessage.conversationId
+        }
+    const messageId = await ctx.db.insert("messages", {
+      memberId: member._id,
+      body: args.body,
+      image: args.image,
+      channelId: args.channelId,
+        workspaceId: args.workspaceId,
+      conversationId:_conversationId,
+      parentMessageId: args.parentMessageId,
+      updatedAt: Date.now(),
+    });
+    return messageId;
+  },
+});

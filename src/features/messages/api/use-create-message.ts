@@ -5,10 +5,12 @@ import {  Id } from "../../../../convex/_generated/dataModel";
 // import Error from "next/error";
 
 type RequestType = {
-    body: string, image?: Id<"_storage">,
-    workspaceId: Id<"workspaces">,
-    channelId?: Id<"channels">,
-    parentMessageId?:Id<"messages">
+  body: string;
+  image?: Id<"_storage">;
+  workspaceId: Id<"workspaces">;
+  channelId?: Id<"channels">;
+  parentMessageId?: Id<"messages">;
+  conversationId?: Id<"conversations">;
 };
 type ResponseType = Id<"messages"> | null;
 type Options = {
